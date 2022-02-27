@@ -1,0 +1,28 @@
+{
+  "name": "teammate-html",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/camilleNicoleT/TeamMate-HTML.git"
+  },
+  "keywords": [
+    "employee"
+  ],
+  "author": "CamilleTheobald",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/camilleNicoleT/TeamMate-HTML/issues"
+  },
+  "homepage": "https://github.com/camilleNicoleT/TeamMate-HTML#readme",
+  "devDependencies": {
+    "jest": "^27.5.1"
+  },
+  "dependencies": {
+    "inquirer": "^8.2.0"
+  }
+}
