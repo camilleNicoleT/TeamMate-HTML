@@ -7,12 +7,12 @@ const Employee = require('./Employee');
 const Manager = require('./Manager');
 const Intern = require('./Intern');
 
-const employeeQ=[]
-const engineerQ=[]
-const managerQ=[]
-const internQ=[]
+const employeeQ=[];
+const engineerQ=[];
+const managerQ=[];
+const internQ=[];
 
-const teamInfo = () => {
+const employeeQ = () => {
     console.log(`
     =============================================
     Answer these questions to create your Team!
@@ -69,8 +69,11 @@ const teamInfo = () => {
          ' - Manager ',
         ]
     },
-  ],
-  engineerQ [
+  ])
+};
+const engineerQ = () => {
+return inquirer
+.prompt([
     {  
       type: 'input',
     name: 'title',
@@ -83,18 +86,29 @@ const teamInfo = () => {
         return false;
       }
     },
+    },
+      
+  ])
+},
 
-    }
-  ],
-  confirmAdd [
-  {
+const confirmAdd = () => {
+    return inquirer.prompt ([
+{
     type: 'confirm',
-    name: 'confirmAddProject',
-    message: 'Would you like to enter another project?',
+    name: 'confirmAdd',
+    message: 'Would you like to enter another employee?',
     default: false
   }    
-],
-)}
+])
+.then(employeeData => {
+  employeeQ.answers.push(employeeData);
+  if (employeeQ.confirmAdd) {
+    return employeeQ();
+  } else {
+    return employeeQ();
+  } 
+});
+}
 
 function employeeInfo (answers) {
     if(answers.role ==='Engineer'){

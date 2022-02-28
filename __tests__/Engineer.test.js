@@ -19,9 +19,8 @@ test('Saves role information',() => {
     const engineer = new Engineer('cam', 50, 'cam@gmail.com', role);
     expect(engineer.getRole()).toBe(role);
 });
-
-test('Retrieve Github with github()', () => {
+test('Retrieve github with github()', () => {
     const github = 'camGithub';
-    const engineer = new Engineer('cam', 50, 'cam@gmail.com', 'Engineer', github);
-    expect(engineer.github()).toBe(github);
-})
+    const e = new Engineer('cam', 50, 'cam@gmail.com', 'Engineer', github);
+    expect(e.github()).toBe(github);
+});
