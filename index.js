@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
 const generatePage = require('./src/page-template.js');
-const {writeFile, copyFile} = require('./src/page-template.js');
+// const {writeFile, copyFile} = require('./src/page-template.js');
 const Engineer = require('./lib/Engineer');
 const Employee = require('./lib/Employee');
 const Manager = require('./lib/Manager');
@@ -142,9 +142,37 @@ if (confirmAdd) {
 
 });
 }
+const writeFile = fileInfo => {
+  return new Promise((resolve,reject) => {
+    fs.writeFile('./dist/createdindex.html', fileInfo, err => {
+      if (err) {
+        reject(err)
+        return;
+      }
+      resolve({
+        ok:true,
+        message: "Your page has been created!"
+      })
+    })
+  })
+};
+const copyFile = ()=> {
+  return new Promise((resolve,reject) => {
+    fs.copyFile('./src/style.css', './dist/style.css', err=> {
+      if (err) {
+        reject(err)
+        return;
+      }
+      resolve({
+        ok:true,
+        message: "CSS file copied!"
+      })
+    })
+  })
+}
 employeeQ()  
     .then(team => {
-      return generateCard(team);
+      return generatePage(team);
     })
   .then(pageHTML => {
     return writeFile(pageHTML)
