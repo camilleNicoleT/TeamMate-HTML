@@ -1,29 +1,60 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
-// const generateMarkdown = require('./utils/generateMarkdown.js');
-// const copyFile = require('./utils/generateMarkdown.js');
+const generatePage = require('./src/page-template.js');
+const {writeFile, copyFile} = require('./src/page-template.js');
+const Engineer = require('./lib/Engineer');
+const Employee = require('./Employee');
+const Manager = require('./Manager');
+const Intern = require('./Intern');
 
+const employeeQ=[]
+const engineerQ=[]
+const managerQ=[]
+const internQ=[]
 
-//Manager function
-//Separate prompts by employee role 
-//at end creation of manager do you want to create another employee
-
-const questions = () => {
+const teamInfo = () => {
     console.log(`
     =============================================
     Answer these questions to create your Team!
     =============================================
     `);
-  return inquirer.prompt([
+  return inquirer
+  .prompt([
     {
         type: 'input',
         name: 'title',
-        message: 'What is your name? (Required)',
-        validate: titleInput => {
-          if (titleInput) {
+        message: 'What is the employees name? (Required)',
+        validate: nameInput => {
+          if (nameInput) {
             return true;
           } else {
-            console.log('Please enter your name!');
+            console.log('Please enter employee name!');
+            return false;
+          }
+        },
+      },
+      {
+        type: 'input',
+        name: 'id',
+        message: 'What is the employees id? (Required)',
+        validate: idInput => {
+          if (idInput) {
+            return true;
+          } else {
+            console.log('Please enter employee id!');
+            return false;
+          }
+        },
+      },
+      {
+        type: 'input',
+        name: 'email',
+        message: 'What is the employees email? (Required)',
+        validate: emailInput => {
+          if (emailInput) {
+            return true;
+          } else {
+            console.log('Please enter employee email!');
             return false;
           }
         },
@@ -35,7 +66,126 @@ const questions = () => {
         choices: [
          ' - Engineer ',
          ' - Intern ',
-              
+         ' - Manager ',
         ]
     },
-  ]);
+  ],
+  engineerQ [
+    {  
+      type: 'input',
+    name: 'title',
+    message: 'What is your github profile? (Required)',
+    validate: titleInput => {
+      if (titleInput) {
+        return true;
+      } else {
+        console.log('Please enter your name!');
+        return false;
+      }
+    },
+
+    }
+  ],
+  confirmAdd [
+  {
+    type: 'confirm',
+    name: 'confirmAddProject',
+    message: 'Would you like to enter another project?',
+    default: false
+  }    
+],
+)}
+
+function employeeInfo (answers) {
+    if(answers.role ==='Engineer'){
+      var engineer = new Engineer (
+        answers.name,
+        answers.id,
+        answers.email,
+        answers.role
+      )
+      return engineerInfo(engineer);
+    } else if (answers.role ==='Manager'){
+      var engineer = new Manager (
+        answers.name,
+        answers.id,
+        answers.email,
+        answers.role
+      )
+      return managerInfo(manager);
+    } else if (answers.role ==='Intern'){
+      var intern = new Intern (
+        answers.name,
+        answers.id,
+        answers.email,
+        answers.role
+      )
+      return internInfo(intern);
+    }
+}
+  
+
+function engineerInfo(engineer) { 
+    return new Promise((resolve)=> {
+      resolve(
+        inquirer.prompt(questions.engineerQ)
+        .then ((response) => {
+          engineer = {...engineer, ...response};
+          employeeInfo.push(engineer)
+        })
+      )
+    })
+   }
+function internInfo(intern) { 
+    return new Promise((resolve)=> {
+      resolve(
+        inquirer.prompt(internQ)
+        .then ((response) => {
+          intern = {...intern, ...response};
+          employeeInfo.push(intern)
+        })
+      )
+    })
+   }
+function managerInfo(manager) { 
+    return new Promise((resolve)=> {
+      resolve(
+        inquirer.prompt(managerQ)
+        .then ((response) => {
+          manager = {...manager, ...response};
+          employeeInfo.push(manager)
+        })
+      )
+    })
+   }
+
+function start () {
+  teamInfo()
+}
+
+function createTeam() {
+  start()
+  .then(answers => employeeInfo(answers)).then(confirm).then(response => {
+    if (response.confirmed) {
+      createTeam()
+      return employeeInfo
+    } 
+    return employeeInfo
+  })
+  .then(employeeInfo => generatePage(employeeInfo))
+  .then(pageHTML => {
+    return writeFile(pageHTML)
+  }) 
+  .then (writeFile => {
+    console.log(writeFile)
+    return copyFile();
+  })
+  .then (copyFile => {
+    console.log(copyFile);
+  })
+  .catch (err => {
+    console.log(err);
+  })
+};
+
+start();
