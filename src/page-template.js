@@ -51,11 +51,7 @@ const generatePage = employeesArr => {
         .filter(({ feature }) => feature)
         .map(({ name, id, email, role }) => {
           return `
-          <div class="col-12 mb-2 bg-dark text-light p-3">
-            <h3 class="portfolio-item-title text-light">${name}</h3>
-            <h5 class="portfolio-languages">
-              Built With:
-              ${languages.join(', ')}
+         
             </h5>
             <p>${description}</p>
             <a href="${link}" class="btn"><i class="fab fa-github mr-2"></i>View Project on GitHub</a>

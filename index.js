@@ -3,20 +3,19 @@ const fs = require('fs');
 const generatePage = require('./src/page-template.js');
 const {writeFile, copyFile} = require('./src/page-template.js');
 const Engineer = require('./lib/Engineer');
-const Employee = require('./Employee');
-const Manager = require('./Manager');
-const Intern = require('./Intern');
+const Employee = require('./lib/Employee');
+const Manager = require('./lib/Manager');
+const Intern = require('./lib/Intern');
+// const { profile } = require('console');
 
-const employeeQ=[];
-const engineerQ=[];
-const managerQ=[];
-const internQ=[];
+const team=[];
+
 
 const employeeQ = () => {
     console.log(`
-    =============================================
-    Answer these questions to create your Team!
-    =============================================
+    ======================
+    Add a Team Member!
+    =====================
     `);
   return inquirer
   .prompt([
@@ -64,35 +63,53 @@ const employeeQ = () => {
         name: 'role',
         message: "What is the employee's role? (<a> for all, <space> to select, <enter> to submit)",
         choices: [
-         ' - Engineer ',
-         ' - Intern ',
-         ' - Manager ',
+         'Engineer',
+         'Intern',
+         'Manager',
         ]
     },
-  ])
-};
-const engineerQ = () => {
-return inquirer
-.prompt([
     {  
       type: 'input',
     name: 'title',
-    message: 'What is your github profile? (Required)',
-    validate: titleInput => {
-      if (titleInput) {
+    message: "What is the Engineer's github profile?",
+    when: (input) => input.role === 'Engineer',
+    validate: githubInput => {
+      if (githubInput) {
         return true;
       } else {
-        console.log('Please enter your name!');
+        console.log('Please enter the github profile name!');
+        return false;
+      }
+    },
+  }, 
+    {  
+    type: 'input',
+    name: 'school',
+    message: "What school is the intern enrolled in? (Required)",
+    when: (input) => input.role === 'Intern',
+    validate: schoolInput => {
+      if (schoolInput) {
+        return true;
+      } else {
+        console.log("Please enter the intern's school");
         return false;
       }
     },
     },
-      
-  ])
-},
-
-const confirmAdd = () => {
-    return inquirer.prompt ([
+    {  
+    type: 'input',
+    name: 'officeNumber',
+    message: "What is the Manager's office number?",
+    when: (input) => input.role === 'Manager',
+    validate: officeNumber => {
+      if (officeNumber) {
+        return true;
+      } else {
+        console.log('Please enter the office number for Manager');
+        return false;
+      }
+    },
+  },
 {
     type: 'confirm',
     name: 'confirmAdd',
@@ -101,92 +118,34 @@ const confirmAdd = () => {
   }    
 ])
 .then(employeeData => {
-  employeeQ.answers.push(employeeData);
-  if (employeeQ.confirmAdd) {
-    return employeeQ();
-  } else {
-    return employeeQ();
+ var { role, name, id, email, github, school, confirmAdd} = employeeData;
+ var employee;
+  if (role ==='Engineer') {
+    employee = new Engineer (name, id, email, github);
+    
+  } else if (role === 'Intern') {
+    employee = new Intern (name, id, email, school);
   } 
+  else if (role === 'Manager') {
+    employee = new Manager (name, id, email, officeNumber);
+  }
+
+team.push(employee)
+console.log(employee);
+console.log(team);
+
+if (confirmAdd) {
+  return employeeQ();
+} else{
+  return team;
+}
+
 });
 }
-
-function employeeInfo (answers) {
-    if(answers.role ==='Engineer'){
-      var engineer = new Engineer (
-        answers.name,
-        answers.id,
-        answers.email,
-        answers.role
-      )
-      return engineerInfo(engineer);
-    } else if (answers.role ==='Manager'){
-      var engineer = new Manager (
-        answers.name,
-        answers.id,
-        answers.email,
-        answers.role
-      )
-      return managerInfo(manager);
-    } else if (answers.role ==='Intern'){
-      var intern = new Intern (
-        answers.name,
-        answers.id,
-        answers.email,
-        answers.role
-      )
-      return internInfo(intern);
-    }
-}
-  
-
-function engineerInfo(engineer) { 
-    return new Promise((resolve)=> {
-      resolve(
-        inquirer.prompt(questions.engineerQ)
-        .then ((response) => {
-          engineer = {...engineer, ...response};
-          employeeInfo.push(engineer)
-        })
-      )
+employeeQ()  
+    .then(team => {
+      return generateCard(team);
     })
-   }
-function internInfo(intern) { 
-    return new Promise((resolve)=> {
-      resolve(
-        inquirer.prompt(internQ)
-        .then ((response) => {
-          intern = {...intern, ...response};
-          employeeInfo.push(intern)
-        })
-      )
-    })
-   }
-function managerInfo(manager) { 
-    return new Promise((resolve)=> {
-      resolve(
-        inquirer.prompt(managerQ)
-        .then ((response) => {
-          manager = {...manager, ...response};
-          employeeInfo.push(manager)
-        })
-      )
-    })
-   }
-
-function start () {
-  teamInfo()
-}
-
-function createTeam() {
-  start()
-  .then(answers => employeeInfo(answers)).then(confirm).then(response => {
-    if (response.confirmed) {
-      createTeam()
-      return employeeInfo
-    } 
-    return employeeInfo
-  })
-  .then(employeeInfo => generatePage(employeeInfo))
   .then(pageHTML => {
     return writeFile(pageHTML)
   }) 
@@ -199,7 +158,5 @@ function createTeam() {
   })
   .catch (err => {
     console.log(err);
-  })
-};
+  });
 
-start();
