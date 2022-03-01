@@ -15,7 +15,8 @@ const managerCard = function(manager){
 };
 const engineerCard = function(engineer){
  
-  return `  <div class ="col-3 mt-3">
+  return ` 
+   <div class ="col-3 mt-3">
   <div class ='card'>
     <h2 class ='card-header'>${engineer.name}</h2>
     <h3>Engineer</h3>
@@ -98,5 +99,4 @@ const generatePage = (teamCards) => {
   `;
 };
 
-// module.exports= {writeFile, copyFile};
 module.exports= generatePage;

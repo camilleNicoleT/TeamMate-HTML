@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
+
 const generatePage = require('./src/page-template.js');
-// const {writeFile, copyFile} = require('./src/page-template.js');
 const Engineer = require('./lib/Engineer');
 const Employee = require('./lib/Employee');
 const Manager = require('./lib/Manager');
@@ -20,8 +20,14 @@ const employeeQ = () => {
   return inquirer
   .prompt([
     {
+      type: 'list',
+      name: 'role',
+      message: "What is the employee's role? (arrows to find role, <enter> to submit)",
+      choices: ['Engineer', 'Intern', 'Manager']
+  },
+    {
         type: 'input',
-        name: 'title',
+        name: 'name',
         message: 'What is the employees name? (Required)',
         validate: nameInput => {
           if (nameInput) {
@@ -58,23 +64,14 @@ const employeeQ = () => {
           }
         },
       },
-      {
-        type: 'checkbox',
-        name: 'role',
-        message: "What is the employee's role? (<a> for all, <space> to select, <enter> to submit)",
-        choices: [
-         'Engineer',
-         'Intern',
-         'Manager',
-        ]
-    },
+    
     {  
       type: 'input',
-    name: 'title',
+    name: 'github',
     message: "What is the Engineer's github profile?",
     when: (input) => input.role === 'Engineer',
-    validate: githubInput => {
-      if (githubInput) {
+    validate: input => {
+      if (input) {
         return true;
       } else {
         console.log('Please enter the github profile name!');
@@ -82,13 +79,13 @@ const employeeQ = () => {
       }
     },
   }, 
-    {  
+  {  
     type: 'input',
     name: 'school',
     message: "What school is the intern enrolled in? (Required)",
     when: (input) => input.role === 'Intern',
-    validate: schoolInput => {
-      if (schoolInput) {
+    validate: input => {
+      if (input) {
         return true;
       } else {
         console.log("Please enter the intern's school");
@@ -101,8 +98,8 @@ const employeeQ = () => {
     name: 'officeNumber',
     message: "What is the Manager's office number?",
     when: (input) => input.role === 'Manager',
-    validate: officeNumber => {
-      if (officeNumber) {
+    validate: input => {
+      if (input) {
         return true;
       } else {
         console.log('Please enter the office number for Manager');
@@ -115,24 +112,26 @@ const employeeQ = () => {
     name: 'confirmAdd',
     message: 'Would you like to enter another employee?',
     default: false
-  }    
+  },
 ])
+
 .then(employeeData => {
- var { role, name, id, email, github, school, confirmAdd} = employeeData;
+ var { role, name, id, email, github, school, officeNumber, confirmAdd} = employeeData;
  var employee;
   if (role ==='Engineer') {
-    employee = new Engineer (name, id, email, github);
+    employee = new Engineer (name, id, email, role, github);
     
   } else if (role === 'Intern') {
-    employee = new Intern (name, id, email, school);
+    employee = new Intern (name, id, email, role, school);
   } 
   else if (role === 'Manager') {
-    employee = new Manager (name, id, email, officeNumber);
+    employee = new Manager (name, id, email, role, officeNumber);
   }
+
 
 team.push(employee)
 console.log(employee);
-console.log(team);
+
 
 if (confirmAdd) {
   return employeeQ();
